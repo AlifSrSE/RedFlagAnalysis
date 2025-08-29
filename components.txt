@@ -57,178 +57,172 @@ const RedFlagAnalysisPage: React.FC = () => {
   };
 
   if (isFormVisible) {
-    return (
-      <Card bordered title={<Title level={4}>Red Flag Analysis Form</Title>}>
-        <Form form={form} layout="vertical" onFinish={onFinish}>
-          <Row gutter={16}>
-            {/* ... (All Form.Items from previous AnalysisForm.tsx) ... */}
+  return (
+    <Card bordered>
+      <Title level={4}>Red Flag Analysis Form</Title>
+      <Divider />
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={onFinish}
+      >
+        <Row gutter={16}>
+          {/* Financials & Ratios */}
             <Col span={8}>
-                <Title level={5}>Financials & Ratios</Title>
+            <Title level={5}>Financials & Ratios</Title>
                 <Form.Item name="monthlyRevenue" label="Monthly Revenue ($)" rules={[{ required: true }]}>
-                <InputNumber style={{ width: '100%' }} />
+                    <InputNumber style={{ width: '100%' }} />
                 </Form.Item>
                 <Form.Item name="lastMonthExpense" label="Last Month Expense ($)" rules={[{ required: true }]}>
-                <InputNumber style={{ width: '100%' }} />
+                    <InputNumber style={{ width: '100%' }} />
                 </Form.Item>
                 <Form.Item name="installmentObligation" label="Installment Obligation ($)" rules={[{ required: true }]}>
-                <InputNumber style={{ width: '100%' }} />
+                    <InputNumber style={{ width: '100%' }} />
                 </Form.Item>
                 <Form.Item name="payablePeriod" label="Payable Period" rules={[{ required: true }]}>
-                <Select>
-                    <Option value="monthly">Monthly</Option>
-                    <Option value="weekly">Weekly</Option>
-                </Select>
+                    <Select>
+                        <Option value="monthly">Monthly</Option>
+                        <Option value="weekly">Weekly</Option>
+                    </Select>
                 </Form.Item>
                 <Form.Item name="dbr" label="DBR (%)" rules={[{ required: true }]}>
-                <InputNumber style={{ width: '100%' }} />
+                    <InputNumber style={{ width: '100%' }} />
                 </Form.Item>
                 <Form.Item name="currentLiabilityRatio" label="Current Liability Ratio (%)" rules={[{ required: true }]}>
-                <InputNumber style={{ width: '100%' }} />
+                    <InputNumber style={{ width: '100%' }} />
                 </Form.Item>
                 <Form.Item name="profitabilityRatio" label="Profitability Ratio (%)" rules={[{ required: true }]}>
-                <InputNumber style={{ width: '100%' }} />
+                    <InputNumber style={{ width: '100%' }} />
                 </Form.Item>
                 <Form.Item name="businessType" label="Business Type" rules={[{ required: true }]}>
-                <Select>
-                    <Option value="wholesaler">Wholesaler</Option>
-                    <Option value="retailer">Retailer</Option>
-                </Select>
+                    <Select>
+                        <Option value="wholesaler">Wholesaler</Option>
+                        <Option value="retailer">Retailer</Option>
+                    </Select>
                 </Form.Item>
                 <Form.Item name="leverageRatio" label="Leverage Ratio (%)" rules={[{ required: true }]}>
-                <InputNumber style={{ width: '100%' }} />
+                    <InputNumber style={{ width: '100%' }} />
                 </Form.Item>
             </Col>
+
+          {/* Business & Compliance */}
             <Col span={8}>
-                <Title level={5}>Business & Compliance</Title>
+            <Title level={5}>Business & Compliance</Title>
                 <Form.Item name="yearsOfOperation" label="Years of Operation">
-                <InputNumber style={{ width: '100%' }} />
+                    <InputNumber style={{ width: '100%' }} />
                 </Form.Item>
                 <Form.Item name="tradeLicenseAge" label="Trade License Age (Years)">
-                <InputNumber style={{ width: '100%' }} />
+                    <InputNumber style={{ width: '100%' }} />
                 </Form.Item>
                 <Form.Item name="loanTenor" label="Loan Tenor (Months)">
-                <InputNumber style={{ width: '100%' }} />
+                    <InputNumber style={{ width: '100%' }} />
                 </Form.Item>
                 <Form.Item name="rentDeedPeriod" label="Rent Deed Period (Months)">
                 <InputNumber style={{ width: '100%' }} />
                 </Form.Item>
                 <Form.Item name="customerConcentration" label="Customer Concentration (%)">
-                <InputNumber style={{ width: '100%' }} />
+                    <InputNumber style={{ width: '100%' }} />
                 </Form.Item>
                 <Form.Item name="supplierConcentration" label="Supplier Concentration (%)">
-                <InputNumber style={{ width: '100%' }} />
+                    <InputNumber style={{ width: '100%' }} />
                 </Form.Item>
                 <Form.Item name="seasonalRevenue" label="Seasonal Revenue (%)">
-                <InputNumber style={{ width: '100%' }} />
-                </Form.Item>
-                <Form.Item name="lowTransactionFrequency" label="Low Transaction Frequency" valuePropName="checked">
-                <Switch />
+                    <InputNumber style={{ width: '100%' }} />
                 </Form.Item>
             </Col>
+
+        {/* Other Flags */}
             <Col span={8}>
-                <Title level={5}>Other Flags (Toggle)</Title>
-                <Form.Item name="activeDefault" label="Active Default / NPL" valuePropName="checked">
-                <Switch />
-                </Form.Item>
-                <Form.Item name="blacklistedIndustry" label="Blacklisted Industry" valuePropName="checked">
-                <Switch />
-                </Form.Item>
-                <Form.Item name="verifiedTradeLicense" label="Verified Trade License" valuePropName="checked">
-                <Switch />
-                </Form.Item>
-                <Form.Item name="collateralDisputes" label="Collateral Disputes" valuePropName="checked">
-                <Switch />
-                </Form.Item>
-                <Form.Item name="weakGuarantor" label="Weak Guarantor" valuePropName="checked">
-                <Switch />
-                </Form.Item>
-                <Form.Item name="highPersonalExpenses" label="High Personal Expenses" valuePropName="checked">
-                <Switch />
-                </Form.Item>
-                <Form.Item name="frequentRelocation" label="Frequent Relocation" valuePropName="checked">
-                <Switch />
-                </Form.Item>
-                <Form.Item name="overstatedSales" label="Overstated Sales" valuePropName="checked">
-                <Switch />
-                </Form.Item>
-                <Form.Item name="informalBorrowing" label="Informal Borrowing Dependence" valuePropName="checked">
-                <Switch />
-                </Form.Item>
-                <Form.Item name="reputationIssues" label="Reputation Issues" valuePropName="checked">
-                <Switch />
-                </Form.Item>
-                <Form.Item name="pendingLegalDisputes" label="Pending Legal Disputes" valuePropName="checked">
-                <Switch />
-                </Form.Item>
-                <Form.Item name="noDigitalFootprint" label="No Digital Footprint" valuePropName="checked">
-                <Switch />
-                </Form.Item>
-                <Form.Item name="poorRecordKeeping" label="Poor Record-Keeping" valuePropName="checked">
-                <Switch />
-                </Form.Item>
-                <Form.Item name="industryExternalShocks" label="Industry External Shocks" valuePropName="checked">
-                <Switch />
-                </Form.Item>
-                <Form.Item name="reportedSalesMismatch" label="Reported Sales Mismatch" valuePropName="checked">
-                <Switch />
-                </Form.Item>
-                <Form.Item name="cashHeavyFlow" label="Cash Heavy Flow" valuePropName="checked">
-                <Switch />
-                </Form.Item>
-                <Form.Item name="stockSalesGap" label="Stock Sales Gap" valuePropName="checked">
-                <Switch />
-                </Form.Item>
-                <Form.Item name="unreportedSales" label="Unreported Sales" valuePropName="checked">
-                <Switch />
-                </Form.Item>
-                <Form.Item name="salaryBurdenHigh" label="High Salary Burden" valuePropName="checked">
-                <Switch />
-                </Form.Item>
-                <Form.Item name="missingDataFields" label="Missing Data Fields" valuePropName="checked">
-                <Switch />
-                </Form.Item>
-                <Form.Item name="inconsistentReporting" label="Inconsistent Reporting" valuePropName="checked">
-                <Switch />
-                </Form.Item>
-                <Form.Item name="docMismatch" label="Document Mismatch" valuePropName="checked">
-                <Switch />
-                </Form.Item>
+            <Title level={5}>Other Flags</Title>
+                <Row gutter={[16, 16]}>
+                    <Col span={6}>
+                        <Form.Item name="activeDefault" label="Active Default / NPL" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="blacklistedIndustry" label="Blacklisted Industry" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="collateralDisputes" label="Collateral Disputes" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="weakGuarantor" label="Weak Guarantor" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="frequentRelocation" label="Frequent Relocation" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="overstatedSales" label="Overstated Sales" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="reputationIssues" label="Reputation Issues" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="noDigitalFootprint" label="No Digital Footprint" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="lowTransactionFrequency" label="Low Transaction Frequency" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="verifiedTradeLicense" label="Verified Trade License" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="highPersonalExpenses" label="High Personal Expenses" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="informalBorrowing" label="Informal Borrowing Dependence" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="pendingLegalDisputes" label="Pending Legal Disputes" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="poorRecordKeeping" label="Poor Record-Keeping" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="industryExternalShocks" label="Industry External Shocks" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                </Row>
             </Col>
-            <Col span={24}>
-              <Divider orientation="left">Historical Data (Last 6 Months)</Divider>
-              <Row gutter={16}>
-                <Col span={8}>
-                  {dynamicFormList('salesHistory', 'Sales History', ['month', 'amount'])}
-                </Col>
-                <Col span={8}>
-                  {dynamicFormList('expenseHistory', 'Expense History', ['month', 'amount'])}
-                </Col>
-                <Col span={8}>
-                  {dynamicFormList('bankDeposits', 'Bank Deposits', ['month', 'amount'])}
-                </Col>
-              </Row>
-              <Row gutter={16} style={{ marginTop: '16px' }}>
-                <Col span={8}>
-                  {dynamicFormList('inventoryHistory', 'Inventory History', ['month', 'stock'])}
-                </Col>
-                <Col span={8}>
-                  {dynamicFormList('purchaseHistory', 'Purchase History', ['month', 'amount'])}
-                </Col>
-                <Col span={8}>
-                  {dynamicFormList('paymentHistory', 'Payment History', ['month', 'daysLate'])}
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-          <Divider />
-          <Form.Item>
-            <Button type="primary" htmlType="submit" loading={isSubmitting}>
-              Analyze Business
+        </Row>
+
+        <Divider />
+        <Form.Item>
+            <Button type="primary" htmlType="submit" loading={isLoading}>
+                Analyze Business
             </Button>
-          </Form.Item>
-        </Form>
-      </Card>
-    );
+        </Form.Item>
+      </Form>
+    </Card>
+  );
   }
 
   // Analysis Result View (after form submission)

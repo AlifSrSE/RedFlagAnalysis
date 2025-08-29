@@ -114,7 +114,7 @@ const AnalysisForm: React.FC<AnalysisFormProps> = ({ onAnalysisComplete }) => {
 
           {/* Business & Compliance */}
             <Col span={8}>
-                <Title level={5}>Business & Compliance</Title>
+            <Title level={5}>Business & Compliance</Title>
                 <Form.Item name="yearsOfOperation" label="Years of Operation">
                     <InputNumber style={{ width: '100%' }} />
                 </Form.Item>
@@ -139,93 +139,93 @@ const AnalysisForm: React.FC<AnalysisFormProps> = ({ onAnalysisComplete }) => {
             </Col>
 
         {/* Other Flags */}
-        <Col span={8}>
-        <Title level={5}>Other Flags</Title>
-            <Row gutter={[16, 16]}>
-                <Col span={6}>
-                    <Form.Item name="lowTransactionFrequency" label="Low Transaction Frequency" valuePropName="checked">
-                        <Switch />
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item name="activeDefault" label="Active Default / NPL" valuePropName="checked">
-                        <Switch />
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item name="blacklistedIndustry" label="Blacklisted Industry" valuePropName="checked">
-                        <Switch />
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item name="verifiedTradeLicense" label="Verified Trade License" valuePropName="checked">
-                        <Switch />
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item name="collateralDisputes" label="Collateral Disputes" valuePropName="checked">
-                        <Switch />
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item name="weakGuarantor" label="Weak Guarantor" valuePropName="checked">
-                        <Switch />
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item name="highPersonalExpenses" label="High Personal Expenses" valuePropName="checked">
-                        <Switch />
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item name="frequentRelocation" label="Frequent Relocation" valuePropName="checked">
-                        <Switch />
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item name="overstatedSales" label="Overstated Sales" valuePropName="checked">
-                        <Switch />
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item name="informalBorrowing" label="Informal Borrowing Dependence" valuePropName="checked">
-                        <Switch />
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item name="reputationIssues" label="Reputation Issues" valuePropName="checked">
-                        <Switch />
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item name="pendingLegalDisputes" label="Pending Legal Disputes" valuePropName="checked">
-                        <Switch />
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item name="noDigitalFootprint" label="No Digital Footprint" valuePropName="checked">
-                        <Switch />
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item name="poorRecordKeeping" label="Poor Record-Keeping" valuePropName="checked">
-                        <Switch />
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item name="industryExternalShocks" label="Industry External Shocks" valuePropName="checked">
-                        <Switch />
-                    </Form.Item>
-                </Col>
-            </Row>
-        </Col>
-
+            <Col span={8}>
+            <Title level={5}>Other Flags</Title>
+                <Row gutter={[16, 16]}>
+                    <Col span={6}>
+                        <Form.Item name="activeDefault" label="Active Default / NPL" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="blacklistedIndustry" label="Blacklisted Industry" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="collateralDisputes" label="Collateral Disputes" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="weakGuarantor" label="Weak Guarantor" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="frequentRelocation" label="Frequent Relocation" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="overstatedSales" label="Overstated Sales" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="reputationIssues" label="Reputation Issues" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="noDigitalFootprint" label="No Digital Footprint" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="lowTransactionFrequency" label="Low Transaction Frequency" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="verifiedTradeLicense" label="Verified Trade License" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="highPersonalExpenses" label="High Personal Expenses" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="informalBorrowing" label="Informal Borrowing Dependence" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="pendingLegalDisputes" label="Pending Legal Disputes" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="poorRecordKeeping" label="Poor Record-Keeping" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item name="industryExternalShocks" label="Industry External Shocks" valuePropName="checked">
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                </Row>
+            </Col>
         </Row>
+
         <Divider />
         <Form.Item>
-          <Button type="primary" htmlType="submit" loading={isLoading}>
-            Analyze Business
-          </Button>
+            <Button type="primary" htmlType="submit" loading={isLoading}>
+                Analyze Business
+            </Button>
         </Form.Item>
       </Form>
     </Card>
