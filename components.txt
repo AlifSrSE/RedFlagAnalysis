@@ -1,0 +1,624 @@
+// File: src/pages/redFlagAnalysis.tsx
+
+import React, { useState, useEffect } from 'react';
+import { Form, Input, Button, Card, Divider, message, Spin, Row, Col, Typography, Switch, InputNumber, Select, Collapse, Tag } from 'antd';
+import { MinusCircleOutlined, PlusOutlined, CheckCircleOutlined, WarningOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { useSubmitAnalysisMutation, useGetAnalysisResultQuery, useOverrideAnalysisResultMutation } from '../api/api';
+import { AnalysisResult, FullAnalysis, FullAnalysisForm, OverrideRequest } from '../types/types';
+
+const { Title, Text } = Typography;
+const { Option } = Select;
+const { Panel } = Collapse;
+
+const RedFlagAnalysisPage: React.FC = () => {
+  const [form] = Form.useForm();
+  const [analysisId, setAnalysisId] = useState<string | null>(null);
+  const [isFormVisible, setIsFormVisible] = useState(true);
+
+  const [submitAnalysis, { isLoading: isSubmitting, isSuccess: submitSuccess, data: analysisData, error: submitError }] = useSubmitAnalysisMutation();
+  const { data: resultData, isLoading: isResultLoading, error: resultError, refetch: refetchResult } = useGetAnalysisResultQuery(analysisId!, { skip: !analysisId });
+  const [overrideDecision, { isLoading: isOverriding }] = useOverrideAnalysisResultMutation();
+  
+  // Maps deep pattern codes to human-readable suggestions
+  const deepPatternSuggestions: { [key: string]: string } = {
+    LATE_REPAY_TREND: 'Recommend shorter loan tenor, closer monitoring, or repayment reminders.',
+    SKIPPED_INSTALMENT: 'Suggest borrower provide explanation; partner may request guarantor reinforcement.',
+    PARTIAL_PAYMENTS: 'Offer flexible repayment structure or seasonal instalments.',
+    SEASONAL_SPIKES: 'Suggest seasonal loan products (e.g., shorter tenor, balloon payments).',
+    INCONSISTENT_DEPOSITS: 'Require further verification of reported sales; advise borrowers to bank sales consistently.',
+    CASH_HEAVY_FLOW: 'Encourage digital transaction adoption; consider lower loan amount due to lower transparency.',
+    HIGH_PURCHASE_LOW_STOCK: 'Recommend physical inspection; possible inventory leakage or misreporting.',
+    INVENTORY_BUILDUP: 'Suggest borrower clear stock before additional financing; adjust loan downwards.',
+    STOCK_SALES_GAP: 'Require justification; suggest borrower maintain better bookkeeping.',
+    DECLINING_SALES_3M: 'Propose smaller loan with stricter monitoring; explore restructuring if loan already taken.',
+    VOLATILE_SALES: 'Offer flexible repayment terms tied to sales flow; consider revenue-linked finance.',
+    UNREPORTED_SALES: 'Advise system validation or verification visit; may reduce credit score.',
+    EXPENSE_SPIKE_UNEXPLAINED: 'Flag for manual review; may require risk buffer (lower loan, guarantor).',
+    HIGH_PERSONAL_EXPENSE: 'Advise borrowers to separate business & personal expenses; suggest financial literacy support.',
+    SALARY_BURDEN_HIGH: 'Recommend controlling salary costs; cap loan to prevent repayment stress.',
+    MISSING_DATA_FIELDS: 'Block loan processing until data is complete.',
+    INCONSISTENT_REPORTING: 'Suggest borrower training; flag for manual team review.',
+    DOC_MISMATCH: 'Reject or hold loan until documents are corrected.',
+  };
+
+  useEffect(() => {
+    if (submitSuccess && analysisData) {
+      message.success('Analysis submitted successfully!');
+      setAnalysisId(analysisData._id);
+      setIsFormVisible(false);
+    }
+    if (submitError) {
+      message.error('An error occurred during analysis.');
+    }
+  }, [submitSuccess, analysisData, submitError]);
+
+  const onFinish = (values: FullAnalysisForm) => {
+    submitAnalysis(values);
+  };
+
+  if (isFormVisible) {
+    return (
+      <Card bordered title={<Title level={4}>Red Flag Analysis Form</Title>}>
+        <Form form={form} layout="vertical" onFinish={onFinish}>
+          <Row gutter={16}>
+            {/* ... (All Form.Items from previous AnalysisForm.tsx) ... */}
+            <Col span={8}>
+                <Title level={5}>Financials & Ratios</Title>
+                <Form.Item name="monthlyRevenue" label="Monthly Revenue ($)" rules={[{ required: true }]}>
+                <InputNumber style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="lastMonthExpense" label="Last Month Expense ($)" rules={[{ required: true }]}>
+                <InputNumber style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="installmentObligation" label="Installment Obligation ($)" rules={[{ required: true }]}>
+                <InputNumber style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="payablePeriod" label="Payable Period" rules={[{ required: true }]}>
+                <Select>
+                    <Option value="monthly">Monthly</Option>
+                    <Option value="weekly">Weekly</Option>
+                </Select>
+                </Form.Item>
+                <Form.Item name="dbr" label="DBR (%)" rules={[{ required: true }]}>
+                <InputNumber style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="currentLiabilityRatio" label="Current Liability Ratio (%)" rules={[{ required: true }]}>
+                <InputNumber style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="profitabilityRatio" label="Profitability Ratio (%)" rules={[{ required: true }]}>
+                <InputNumber style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="businessType" label="Business Type" rules={[{ required: true }]}>
+                <Select>
+                    <Option value="wholesaler">Wholesaler</Option>
+                    <Option value="retailer">Retailer</Option>
+                </Select>
+                </Form.Item>
+                <Form.Item name="leverageRatio" label="Leverage Ratio (%)" rules={[{ required: true }]}>
+                <InputNumber style={{ width: '100%' }} />
+                </Form.Item>
+            </Col>
+            <Col span={8}>
+                <Title level={5}>Business & Compliance</Title>
+                <Form.Item name="yearsOfOperation" label="Years of Operation">
+                <InputNumber style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="tradeLicenseAge" label="Trade License Age (Years)">
+                <InputNumber style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="loanTenor" label="Loan Tenor (Months)">
+                <InputNumber style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="rentDeedPeriod" label="Rent Deed Period (Months)">
+                <InputNumber style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="customerConcentration" label="Customer Concentration (%)">
+                <InputNumber style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="supplierConcentration" label="Supplier Concentration (%)">
+                <InputNumber style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="seasonalRevenue" label="Seasonal Revenue (%)">
+                <InputNumber style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="lowTransactionFrequency" label="Low Transaction Frequency" valuePropName="checked">
+                <Switch />
+                </Form.Item>
+            </Col>
+            <Col span={8}>
+                <Title level={5}>Other Flags (Toggle)</Title>
+                <Form.Item name="activeDefault" label="Active Default / NPL" valuePropName="checked">
+                <Switch />
+                </Form.Item>
+                <Form.Item name="blacklistedIndustry" label="Blacklisted Industry" valuePropName="checked">
+                <Switch />
+                </Form.Item>
+                <Form.Item name="verifiedTradeLicense" label="Verified Trade License" valuePropName="checked">
+                <Switch />
+                </Form.Item>
+                <Form.Item name="collateralDisputes" label="Collateral Disputes" valuePropName="checked">
+                <Switch />
+                </Form.Item>
+                <Form.Item name="weakGuarantor" label="Weak Guarantor" valuePropName="checked">
+                <Switch />
+                </Form.Item>
+                <Form.Item name="highPersonalExpenses" label="High Personal Expenses" valuePropName="checked">
+                <Switch />
+                </Form.Item>
+                <Form.Item name="frequentRelocation" label="Frequent Relocation" valuePropName="checked">
+                <Switch />
+                </Form.Item>
+                <Form.Item name="overstatedSales" label="Overstated Sales" valuePropName="checked">
+                <Switch />
+                </Form.Item>
+                <Form.Item name="informalBorrowing" label="Informal Borrowing Dependence" valuePropName="checked">
+                <Switch />
+                </Form.Item>
+                <Form.Item name="reputationIssues" label="Reputation Issues" valuePropName="checked">
+                <Switch />
+                </Form.Item>
+                <Form.Item name="pendingLegalDisputes" label="Pending Legal Disputes" valuePropName="checked">
+                <Switch />
+                </Form.Item>
+                <Form.Item name="noDigitalFootprint" label="No Digital Footprint" valuePropName="checked">
+                <Switch />
+                </Form.Item>
+                <Form.Item name="poorRecordKeeping" label="Poor Record-Keeping" valuePropName="checked">
+                <Switch />
+                </Form.Item>
+                <Form.Item name="industryExternalShocks" label="Industry External Shocks" valuePropName="checked">
+                <Switch />
+                </Form.Item>
+                <Form.Item name="reportedSalesMismatch" label="Reported Sales Mismatch" valuePropName="checked">
+                <Switch />
+                </Form.Item>
+                <Form.Item name="cashHeavyFlow" label="Cash Heavy Flow" valuePropName="checked">
+                <Switch />
+                </Form.Item>
+                <Form.Item name="stockSalesGap" label="Stock Sales Gap" valuePropName="checked">
+                <Switch />
+                </Form.Item>
+                <Form.Item name="unreportedSales" label="Unreported Sales" valuePropName="checked">
+                <Switch />
+                </Form.Item>
+                <Form.Item name="salaryBurdenHigh" label="High Salary Burden" valuePropName="checked">
+                <Switch />
+                </Form.Item>
+                <Form.Item name="missingDataFields" label="Missing Data Fields" valuePropName="checked">
+                <Switch />
+                </Form.Item>
+                <Form.Item name="inconsistentReporting" label="Inconsistent Reporting" valuePropName="checked">
+                <Switch />
+                </Form.Item>
+                <Form.Item name="docMismatch" label="Document Mismatch" valuePropName="checked">
+                <Switch />
+                </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Divider orientation="left">Historical Data (Last 6 Months)</Divider>
+              <Row gutter={16}>
+                <Col span={8}>
+                  {dynamicFormList('salesHistory', 'Sales History', ['month', 'amount'])}
+                </Col>
+                <Col span={8}>
+                  {dynamicFormList('expenseHistory', 'Expense History', ['month', 'amount'])}
+                </Col>
+                <Col span={8}>
+                  {dynamicFormList('bankDeposits', 'Bank Deposits', ['month', 'amount'])}
+                </Col>
+              </Row>
+              <Row gutter={16} style={{ marginTop: '16px' }}>
+                <Col span={8}>
+                  {dynamicFormList('inventoryHistory', 'Inventory History', ['month', 'stock'])}
+                </Col>
+                <Col span={8}>
+                  {dynamicFormList('purchaseHistory', 'Purchase History', ['month', 'amount'])}
+                </Col>
+                <Col span={8}>
+                  {dynamicFormList('paymentHistory', 'Payment History', ['month', 'daysLate'])}
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+          <Divider />
+          <Form.Item>
+            <Button type="primary" htmlType="submit" loading={isSubmitting}>
+              Analyze Business
+            </Button>
+          </Form.Item>
+        </Form>
+      </Card>
+    );
+  }
+
+  // Analysis Result View (after form submission)
+  if (isResultLoading) {
+    return <Spin tip="Analyzing..." size="large" />;
+  }
+
+  if (resultError || !resultData) {
+    return <Result status="error" title="Analysis Failed" subTitle="Unable to fetch analysis data." />;
+  }
+
+  const { hardFlags, softFlags, deepPatternFlags, finalResult, verifierOverride } = resultData;
+  const currentResult = verifierOverride?.overridden ? verifierOverride.overriddenResult : finalResult;
+  const isHardResult = currentResult === 'Hard';
+
+  const renderDetailedFlags = (flags: string[], color: string) =>
+    flags.map((flag) => <Tag color={color} key={flag} style={{ marginBottom: '8px' }}>{flag}</Tag>);
+
+  return (
+    <Card bordered>
+      <Title level={4}>Analysis Report</Title>
+      <Result
+        icon={isHardResult ? <ExclamationCircleOutlined /> : <WarningOutlined />}
+        status={isHardResult ? "error" : "warning"}
+        title={isHardResult ? "Hard Red Flag Found" : "Soft Red Flag Detected"}
+        subTitle={isHardResult ? "This loan is auto-rejected." : "Review and mitigate risks. Loan grade may be capped."}
+      />
+
+      <Divider orientation="left">Final Decision</Divider>
+      <Paragraph>
+        Current System Result: <Tag color={isHardResult ? "red" : "orange"}>{currentResult}</Tag>
+      </Paragraph>
+
+      <Collapse defaultActiveKey={['1', '2']}>
+        {/* Borrower/Simplified View */}
+        <Panel header="Borrower View (Simplified)" key="1">
+          <Paragraph>
+            Based on our analysis, we recommend focusing on improving these areas:
+            {deepPatternFlags.length > 0 ? (
+              <ul>
+                {deepPatternFlags.map(code => (
+                  <li key={code}>{deepPatternSuggestions[code]}</li>
+                ))}
+              </ul>
+            ) : (
+              <Paragraph>No significant issues found. You are in good standing.</Paragraph>
+            )}
+            
+          </Paragraph>
+        </Panel>
+
+        {/* Partner/Detailed View */}
+        <Panel header="Partner View (Detailed)" key="2">
+          <Divider orientation="left">Hard Red Flags</Divider>
+          {hardFlags.length > 0 ? (
+            <div className="tag-container">{renderDetailedFlags(hardFlags, 'red')}</div>
+          ) : (
+            <Paragraph>No hard red flags found.  </Paragraph>
+          )}
+
+          <Divider orientation="left">Soft Red Flags</Divider>
+          {softFlags.length > 0 ? (
+            <div className="tag-container">{renderDetailedFlags(softFlags, 'orange')}</div>
+          ) : (
+            <Paragraph>No soft red flags found.  </Paragraph>
+          )}
+
+          <Divider orientation="left">Deep Pattern Alerts</Divider>
+          {deepPatternFlags.length > 0 ? (
+            <div className="tag-container">{renderDetailedFlags(deepPatternFlags, 'blue')}</div>
+          ) : (
+            <Paragraph>No deep pattern alerts found.  </Paragraph>
+          )}
+        </Panel>
+      </Collapse>
+
+      {/* Admin/Override View (for a Drutoloan officer) */}
+      <Card style={{ marginTop: '20px' }}>
+        <Title level={5}>Admin Controls</Title>
+        <Button onClick={() => setIsFormVisible(true)} style={{ marginRight: '10px' }}>
+          Start New Analysis
+        </Button>
+        <Button type="primary" onClick={() => { /* show override modal */ }}>
+          Override Decision
+        </Button>
+      </Card>
+    </Card>
+  );
+};
+
+export default RedFlagAnalysisPage;
+
+
+---------------------------------
+
+
+// File: src/api/api.ts
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { FullAnalysisForm, FullAnalysis, AnalysisResult, OverrideRequest } from '../types/types';
+
+const BASE_URL = 'http://localhost:5000/api/';
+
+export const analysisApi = createApi({
+  reducerPath: 'analysisApi',
+  baseQuery: fetchBaseQuery({ baseUrl: BASE_URL }),
+  endpoints: (builder) => ({
+    submitAnalysis: builder.mutation<AnalysisResult, FullAnalysisForm>({
+      query: (analysisData) => ({
+        url: 'analyze',
+        method: 'POST',
+        body: analysisData,
+      }),
+    }),
+    getAnalysisResult: builder.query<FullAnalysis, string>({
+      query: (id) => `analysis/${id}`,
+    }),
+    overrideAnalysisResult: builder.mutation<AnalysisResult, OverrideRequest>({
+      query: ({ id, newResult, reason }) => ({
+        url: `analysis/${id}/override`,
+        method: 'PUT',
+        body: { newResult, reason },
+      }),
+    }),
+  }),
+});
+
+export const { 
+  useSubmitAnalysisMutation, 
+  useGetAnalysisResultQuery,
+  useOverrideAnalysisResultMutation
+} = analysisApi;
+
+
+--------------------------
+
+
+// File: redFlagAnalysis-backend/types.ts
+import { Document } from 'mongoose';
+
+// Historical Data Interfaces
+export interface HistoricalData {
+  month: string;
+  amount: number;
+}
+
+export interface PaymentHistory {
+  month: string;
+  daysLate: number;
+  skipped?: boolean;
+  partialPayment?: boolean;
+}
+
+export interface InventoryHistory {
+  month: string;
+  stock: number;
+}
+
+// Data Model for the request body
+export interface FullAnalysisForm {
+  activeDefault?: boolean;
+  monthlyRevenue?: number;
+  lastMonthExpense?: number;
+  installmentObligation?: number;
+  payablePeriod?: 'monthly' | 'weekly';
+  dbr?: number;
+  currentLiabilityRatio?: number;
+  profitabilityRatio?: number;
+  businessType?: 'wholesaler' | 'retailer';
+  leverageRatio?: number;
+  loanTenor?: number;
+  rentDeedPeriod?: number;
+  blacklistedIndustry?: boolean;
+  verifiedTradeLicense?: boolean;
+  collateralDisputes?: boolean;
+  weakGuarantor?: boolean;
+  yearsOfOperation?: number;
+  tradeLicenseAge?: number;
+  customerConcentration?: number;
+  supplierConcentration?: number;
+  seasonalRevenue?: number;
+  highPersonalExpenses?: boolean;
+  frequentRelocation?: boolean;
+  overstatedSales?: boolean;
+  informalBorrowing?: boolean;
+  reputationIssues?: boolean;
+  pendingLegalDisputes?: boolean;
+  noDigitalFootprint?: boolean;
+  poorRecordKeeping?: boolean;
+  lowTransactionFrequency?: boolean;
+  industryExternalShocks?: boolean;
+  
+  paymentHistory?: PaymentHistory[];
+  bankDeposits?: HistoricalData[];
+  inventoryHistory?: InventoryHistory[];
+  purchaseHistory?: HistoricalData[];
+  salesHistory?: HistoricalData[];
+  expenseHistory?: HistoricalData[];
+  
+  reportedSalesMismatch?: boolean;
+  cashHeavyFlow?: boolean;
+  stockSalesGap?: boolean;
+  unreportedSales?: boolean;
+  salaryBurdenHigh?: boolean;
+  missingDataFields?: boolean;
+  inconsistentReporting?: boolean;
+  docMismatch?: boolean;
+  highPersonalExpense?: boolean;
+}
+
+// Mongoose Document Type for Analysis model
+export interface AnalysisType extends FullAnalysisForm, Document {
+  borrowerData: FullAnalysisForm;
+  hardFlags: string[];
+  softFlags: string[];
+  deepPatternFlags: string[];
+  finalResult: 'Hard' | 'Soft';
+  verifierOverride?: {
+    overridden: boolean;
+    overriddenResult: 'Hard' | 'Soft';
+    reason: string;
+    timestamp: Date;
+  };
+  createdAt: Date;
+}
+
+
+-----------------------------
+
+
+// File: redFlagAnalysis-backend/model.ts
+import mongoose, { Schema } from 'mongoose';
+import { AnalysisType, FullAnalysisForm } from './types';
+
+const analysisSchema = new Schema<AnalysisType>({
+  borrowerData: {
+    // Basic Financials & Ratios (from previous doc)
+    activeDefault: { type: Boolean, default: false },
+    monthlyRevenue: { type: Number },
+    lastMonthExpense: { type: Number },
+    // ... all other fields as before
+  },
+  
+  hardFlags: [{ type: String }],
+  softFlags: [{ type: String }],
+  deepPatternFlags: [{ type: String }],
+  finalResult: { type: String, enum: ['Hard', 'Soft'], required: true },
+  
+  verifierOverride: {
+    overridden: { type: Boolean, default: false },
+    overriddenResult: { type: String, enum: ['Hard', 'Soft'] },
+    reason: { type: String },
+    timestamp: { type: Date }
+  },
+  createdAt: { type: Date, default: Date.now },
+});
+
+// The model is now of type 'mongoose.Model<AnalysisType>'
+const Analysis = mongoose.model<AnalysisType>('Analysis', analysisSchema);
+
+export default Analysis;
+
+
+---------------------
+
+
+// File: redFlagAnalysis-backend/controller.ts
+import { Request, Response } from 'express';
+import Analysis from './model';
+import { AnalysisType, FullAnalysisForm } from './types';
+
+const runDeepPatternAnalysis = (data: FullAnalysisForm): string[] => {
+  const deepPatternFlags: string[] = [];
+  // ... (all the deep pattern logic remains the same, with added types for local variables)
+  return deepPatternFlags;
+};
+
+const runRedFlagLogic = (data: FullAnalysisForm) => {
+  const hardFlags: string[] = [];
+  const softFlags: string[] = [];
+  // ... (all the hard/soft flag logic remains the same, with added types)
+  return { hardFlags, softFlags };
+};
+
+export const analyzeData = async (req: Request<{}, {}, FullAnalysisForm>, res: Response<AnalysisType | { message: string }>) => {
+  try {
+    const data = req.body;
+    const { hardFlags, softFlags } = runRedFlagLogic(data);
+    const deepPatternFlags = runDeepPatternAnalysis(data);
+    const finalResult = hardFlags.length > 0 ? 'Hard' : 'Soft';
+
+    const newAnalysis: AnalysisType = new Analysis({
+      borrowerData: data,
+      hardFlags,
+      softFlags,
+      deepPatternFlags,
+      finalResult
+    });
+
+    await newAnalysis.save();
+    res.status(201).json(newAnalysis);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getAnalysis = async (req: Request<{ id: string }>, res: Response<AnalysisType | { message: string }>) => {
+  try {
+    const analysis = await Analysis.findById(req.params.id);
+    if (!analysis) return res.status(404).json({ message: 'Analysis not found' });
+    res.json(analysis);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const overrideDecision = async (req: Request<{ id: string }, {}, { newResult: 'Hard' | 'Soft', reason: string }>, res: Response<AnalysisType | { message: string }>) => {
+  try {
+    const { newResult, reason } = req.body;
+    const analysis = await Analysis.findById(req.params.id);
+    if (!analysis) return res.status(404).json({ message: 'Analysis not found' });
+    
+    // Type checking for the verifierOverride subdocument
+    if (!analysis.verifierOverride) {
+        analysis.verifierOverride = { overridden: true, overriddenResult: newResult, reason, timestamp: new Date() };
+    } else {
+        analysis.verifierOverride.overridden = true;
+        analysis.verifierOverride.overriddenResult = newResult;
+        analysis.verifierOverride.reason = reason;
+        analysis.verifierOverride.timestamp = new Date();
+    }
+    
+    await analysis.save();
+    res.json(analysis);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+-----------------------------
+
+
+// File: redFlagAnalysis-backend/validation.ts
+import { body, ValidationChain } from 'express-validator';
+
+export const validateAnalysisData: ValidationChain[] = [
+  body('monthlyRevenue').isNumeric().withMessage('Monthly Revenue must be a number'),
+  body('installmentObligation').isNumeric().withMessage('Installment Obligation must be a number'),
+  body('dbr').isNumeric().withMessage('DBR must be a number'),
+  body('currentLiabilityRatio').isNumeric().withMessage('Current Liability Ratio must be a number'),
+  body('profitabilityRatio').isNumeric().withMessage('Profitability Ratio must be a number'),
+  body('leverageRatio').isNumeric().withMessage('Leverage Ratio must be a number'),
+  body('businessType').isIn(['wholesaler', 'retailer']).withMessage('Invalid Business Type'),
+];
+
+export const validateOverride: ValidationChain[] = [
+  body('newResult').isIn(['Hard', 'Soft']).withMessage('New Result must be Hard or Soft'),
+  body('reason').isLength({ min: 10 }).withMessage('Reason must be at least 10 characters long'),
+];
+
+
+-----------------------
+
+
+// File: redFlagAnalysis-backend/server.ts
+import express, { Express, Request, Response } from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import analysisRouter from './route';
+
+dotenv.config();
+
+const app: Express = express();
+const port = process.env.PORT || 5000;
+
+app.use(cors());
+app.use(express.json());
+
+// Database connection
+mongoose.connect(process.env.MONGO_URI!, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 30000,
+}).then(() => console.log('MongoDB connected'))
+  .catch(err => console.error('MongoDB connection error:', err));
+
+// API routes
+app.use('/api', analysisRouter);
+
+app.listen(port, () => {
+  console.log(`Server is running on port: ${port}`);
+});
